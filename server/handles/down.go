@@ -23,7 +23,8 @@ func Down(c *gin.Context) {
 	filename := stdpath.Base(rawPath)
 	storage, err := fs.GetStorage(rawPath, &fs.GetStoragesArgs{})
 	if err != nil {
-		common.ErrorResp(c, err, 500)
+		//common.ErrorResp(c, err, 500)
+		c.AbortWithStatus(404)
 		return
 	}
 	if common.ShouldProxy(storage, filename) {
@@ -36,7 +37,8 @@ func Down(c *gin.Context) {
 			Type:   c.Query("type"),
 		})
 		if err != nil {
-			common.ErrorResp(c, err, 500)
+			//common.ErrorResp(c, err, 500)
+			c.AbortWithStatus(404)
 			return
 		}
 		if link.Data != nil {
@@ -54,7 +56,8 @@ func Down(c *gin.Context) {
 			query.Del("sign")
 			link.URL, err = utils.InjectQuery(link.URL, query)
 			if err != nil {
-				common.ErrorResp(c, err, 500)
+				//common.ErrorResp(c, err, 500)
+				c.AbortWithStatus(404)
 				return
 			}
 		}
@@ -67,7 +70,8 @@ func Proxy(c *gin.Context) {
 	filename := stdpath.Base(rawPath)
 	storage, err := fs.GetStorage(rawPath, &fs.GetStoragesArgs{})
 	if err != nil {
-		common.ErrorResp(c, err, 500)
+		//common.ErrorResp(c, err, 500)
+		c.AbortWithStatus(404)
 		return
 	}
 	if canProxy(storage, filename) {
@@ -88,7 +92,8 @@ func Proxy(c *gin.Context) {
 			Type:   c.Query("type"),
 		})
 		if err != nil {
-			common.ErrorResp(c, err, 500)
+			//common.ErrorResp(c, err, 500)
+			c.AbortWithStatus(404)
 			return
 		}
 		if link.URL != "" && setting.GetBool(conf.ForwardDirectLinkParams) {
@@ -96,13 +101,15 @@ func Proxy(c *gin.Context) {
 			query.Del("sign")
 			link.URL, err = utils.InjectQuery(link.URL, query)
 			if err != nil {
-				common.ErrorResp(c, err, 500)
+				//common.ErrorResp(c, err, 500)
+				c.AbortWithStatus(404)
 				return
 			}
 		}
 		err = common.Proxy(c.Writer, c.Request, link, file)
 		if err != nil {
-			common.ErrorResp(c, err, 500, true)
+			//common.ErrorResp(c, err, 500, true)
+			c.AbortWithStatus(404)
 			return
 		}
 	} else {
